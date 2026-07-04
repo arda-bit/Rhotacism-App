@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@main
 struct rhotacism_frontendApp: App {
     var body: some Scene {
         WindowGroup {

@@ -8,3 +8,13 @@ wheels/
 
 # Virtual environments
 .venv
+
+# macOS
+.DS_Store
+
+# Xcode user state (machine-specific, not needed in repo)
+*.xcuserstate
+xcuserdata/
+
+# Local recordings
+Rhotacism_Recordings/

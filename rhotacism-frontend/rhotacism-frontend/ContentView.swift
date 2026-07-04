@@ -1,24 +1,28 @@
-//
-//  ContentView.swift
-//  rhotacism-frontend
-//
-//  Created by Arda Aydin on 18.06.2026.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var store: AppStore
+    @State private var selectedTab = 0
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView(selection: $selectedTab) {
+            HomeView()
+                .tabItem { Label("Home", systemImage: "house.fill") }
+                .tag(0)
+
+            TherapyView()
+                .tabItem { Label("Therapy", systemImage: "mic.fill") }
+                .tag(1)
+
+            AssessmentView()
+                .tabItem { Label("Assessment", systemImage: "chart.bar.fill") }
+                .tag(2)
         }
-        .padding()
+        .tint(.indigo)
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(AppStore())
 }
