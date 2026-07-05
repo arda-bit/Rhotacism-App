@@ -43,8 +43,8 @@ struct TherapyView: View {
         .task { await recorder.requestPermission() }
         .sheet(isPresented: $showMouthDiagram) {
             MouthDiagramSheet(
-                errorType: result.flatMap { ErrorType(rawValue: $0.errorType ?? "") },
-                score: result?.score ?? 0
+                word: store.currentWord.lowercased(),
+                errorType: result.flatMap { ErrorType(rawValue: $0.errorType ?? "") }
             )
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
