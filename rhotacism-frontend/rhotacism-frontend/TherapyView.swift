@@ -7,6 +7,7 @@ struct TherapyView: View {
     @State private var result: AnalyzeWordResponse? = nil
     @State private var error: String? = nil
     @State private var showLevelUp = false
+    @State private var showMouthDiagram = false
 
     var body: some View {
         NavigationStack {
@@ -40,6 +41,14 @@ struct TherapyView: View {
             }
         }
         .task { await recorder.requestPermission() }
+        .sheet(isPresented: $showMouthDiagram) {
+            MouthDiagramSheet(
+                errorType: result.flatMap { ErrorType(rawValue: $0.errorType ?? "") },
+                score: result?.score ?? 0
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
         .alert("Microphone access denied", isPresented: $recorder.permissionDenied) {
             Button("OK") {}
         } message: {
@@ -215,6 +224,22 @@ struct TherapyView: View {
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                     }
+
+                    Button {
+                        showMouthDiagram = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "mouth.fill")
+                                .font(.caption.weight(.semibold))
+                            Text("See mouth position")
+                                .font(.caption.weight(.semibold))
+                        }
+                        .foregroundStyle(.indigo)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 9)
+                        .background(Color.indigo.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 14)
