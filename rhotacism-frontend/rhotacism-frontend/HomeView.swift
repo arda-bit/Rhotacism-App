@@ -24,6 +24,7 @@ struct HomeView: View {
                     serverStatusBanner
                     statsRow
                     currentLevelCard
+                    levelSelector
                     if !store.sessions.isEmpty { recentSessionsList }
                 }
                 .padding(.horizontal, 20)
@@ -153,6 +154,72 @@ struct HomeView: View {
         .padding(20)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.primary.opacity(0.06), lineWidth: 0.5))
+    }
+
+    private var levelSelector: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Practice levels")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+
+            VStack(spacing: 6) {
+                ForEach(WordLevel.allCases, id: \.self) { level in
+                    Button {
+                        withAnimation(.spring(duration: 0.3)) {
+                            store.selectLevel(level)
+                        }
+                    } label: {
+                        HStack(spacing: 14) {
+                            ZStack {
+                                Circle()
+                                    .fill(level == store.currentLevel ? Color.indigo : Color.primary.opacity(0.08))
+                                    .frame(width: 36, height: 36)
+                                Text("\(level.levelNumber)")
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(level == store.currentLevel ? .white : .secondary)
+                            }
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(level.displayName)
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundStyle(.primary)
+                                Text("\(level.words.count) words")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            if level == store.currentLevel {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.indigo)
+                                    .font(.system(size: 18))
+                            } else {
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 12)
+                        .background(
+                            level == store.currentLevel
+                                ? Color.indigo.opacity(0.07)
+                                : Color(.secondarySystemGroupedBackground),
+                            in: RoundedRectangle(cornerRadius: 12)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .strokeBorder(
+                                    level == store.currentLevel ? Color.indigo.opacity(0.25) : Color.clear,
+                                    lineWidth: 1
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
     }
 
     private var recentSessionsList: some View {

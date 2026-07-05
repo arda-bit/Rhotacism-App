@@ -72,9 +72,7 @@ final class AppStore: ObservableObject {
     // MARK: - Navigation
 
     func advanceWord() {
-        if currentWordIndex < currentLevel.words.count - 1 {
-            currentWordIndex += 1
-        }
+        currentWordIndex = (currentWordIndex + 1) % currentLevel.words.count
         sessionScores = []
     }
 
@@ -82,6 +80,13 @@ final class AppStore: ObservableObject {
         currentLevel = level
         currentWordIndex = 0
         sessionScores = []
+    }
+
+    func selectLevel(_ level: WordLevel) {
+        currentLevel = level
+        currentWordIndex = 0
+        sessionScores = []
+        currentSessionAttempts = []
     }
 
     func finishSession() {

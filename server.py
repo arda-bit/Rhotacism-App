@@ -114,19 +114,30 @@ async def analyze_word(
 
         segment = find_r_segment(clean, _state["aligner"])
         if segment is None:
-            # MMS couldn't localize /r/, but Whisper confirmed the word was said.
-            # Fall back to the center 30-80% of the recording where the rhotic
-            # portion of an English word typically sits.
-            duration = len(clean.array) / clean.sample_rate
-            segment = PhonemeSegment(
-                phoneme="r",
-                start_time=round(duration * 0.30, 4),
-                end_time=round(duration * 0.80, 4),
-            )
+            # MMS couldn't localize /r/. Scan overlapping 50ms windows across
+            # the whole recording and pick the one with the lowest F3 — that
+            # is the most rhotic moment, regardless of where /r/ sits in the word.
+            measurement = _scan_for_best_r(clean)
+            if measurement is None:
+                return {"verified": True, "transcription": verification.transcription,
+                        "message": "Recording unclear — please try again in a quieter space.",
+                        "cue": "", "score": 0.0, "level_up": False}
+            cls      = classify(measurement)
+            feedback = generate_feedback(cls, target_word, scores)
+            return {
+                "verified":      True,
+                "transcription": verification.transcription,
+                "message":       feedback.message,
+                "cue":           feedback.cue,
+                "score":         feedback.score,
+                "level_up":      feedback.level_up,
+                "f3_hz":         cls.f3_hz,
+                "error_type":    cls.error_type.value,
+            }
 
         try:
             measurement = extract_formants(clean, segment)
-        except ValueError as e:
+        except ValueError:
             return {"verified": True, "transcription": verification.transcription,
                     "message": "Recording unclear — please try again in a quieter space.",
                     "cue": "", "score": 0.0, "level_up": False}
@@ -149,6 +160,36 @@ async def analyze_word(
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
+
+def _scan_for_best_r(audio) -> "FormantMeasurement | None":
+    """
+    Slide a 50ms window across the recording in 20ms steps and return the
+    FormantMeasurement with the lowest F3.  The most rhotic moment of any
+    utterance has the lowest F3, so this reliably finds /r/ quality without
+    needing precise phoneme alignment.
+    """
+    duration    = len(audio.array) / audio.sample_rate
+    window      = 0.05   # 50 ms
+    step        = 0.02   # 20 ms
+    best        = None
+    best_f3     = float("inf")
+
+    t = 0.0
+    while round(t + window, 4) <= duration:
+        seg = PhonemeSegment(phoneme="r",
+                             start_time=round(t, 4),
+                             end_time=round(t + window, 4))
+        try:
+            m = extract_formants(audio, seg)
+            if m.f3 < best_f3:
+                best_f3 = m.f3
+                best    = m
+        except ValueError:
+            pass
+        t += step
+
+    return best
+
 
 def _ext(filename: str | None) -> str | None:
     if not filename or "." not in filename:
