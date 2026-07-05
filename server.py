@@ -10,6 +10,7 @@ Two endpoints:
   GET  /health        — liveness probe
 """
 
+import asyncio
 import json
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
@@ -25,6 +26,7 @@ from rhotacism.formants     import extract_formants
 from rhotacism.classifier   import classify
 from rhotacism.feedback     import generate_feedback
 from rhotacism.alignment    import find_r_segment
+from rhotacism.models       import PhonemeSegment
 
 _executor = ThreadPoolExecutor(max_workers=4)
 _state: dict = {}
@@ -70,8 +72,7 @@ async def analyze(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    import asyncio
-    loop   = asyncio.get_event_loop()
+    loop   = asyncio.get_running_loop()
     report = await loop.run_in_executor(
         _executor,
         lambda: analyze_speech(clean, _state["aligner"], _state["whisper"]),
@@ -102,8 +103,7 @@ async def analyze_word(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    import asyncio
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
 
     def _run():
         verification = verify_word(clean, target_word, _state["whisper"])
@@ -114,9 +114,15 @@ async def analyze_word(
 
         segment = find_r_segment(clean, _state["aligner"])
         if segment is None:
-            return {"verified": True, "transcription": verification.transcription,
-                    "message": "No /r/ detected — the sound may have been omitted.",
-                    "cue": "Try to include the /r/ sound clearly.", "score": 0.0, "level_up": False}
+            # MMS couldn't localize /r/, but Whisper confirmed the word was said.
+            # Fall back to the center 30-80% of the recording where the rhotic
+            # portion of an English word typically sits.
+            duration = len(clean.array) / clean.sample_rate
+            segment = PhonemeSegment(
+                phoneme="r",
+                start_time=round(duration * 0.30, 4),
+                end_time=round(duration * 0.80, 4),
+            )
 
         try:
             measurement = extract_formants(clean, segment)

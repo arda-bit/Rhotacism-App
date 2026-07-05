@@ -1,8 +1,8 @@
 import torch
 from .models import AudioInput, PhonemeSegment
 
-MIN_SEGMENT_DURATION = 0.03  # seconds (30 ms)
-MAX_FRAME_GAP        = 2     # frames — bridge brief dips within a phoneme cluster
+MIN_SEGMENT_DURATION = 0.015  # seconds (15 ms) — short /r/ in single words
+MAX_FRAME_GAP        = 5      # frames — bridge gaps in greedy CTC decode
 
 # MMS_FA vocabulary (confirmed): r=9, s=8, l=12, z=23
 # These are the phonemes we know how to analyse acoustically.
