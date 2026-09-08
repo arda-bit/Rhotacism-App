@@ -22,12 +22,9 @@ from fastapi.responses import JSONResponse
 
 from rhotacism.audio        import load_audio, validate_audio, preprocess
 from rhotacism.verification import load_verifier, verify_word
-from rhotacism.alignment    import load_aligner
-from rhotacism.analyzer     import analyze_speech
 from rhotacism.formants     import extract_formants
 from rhotacism.classifier   import classify
 from rhotacism.feedback     import generate_feedback
-from rhotacism.alignment    import find_r_segment
 from rhotacism.models       import PhonemeSegment
 
 _executor = ThreadPoolExecutor(max_workers=4)
@@ -40,8 +37,6 @@ def _load_models():
     try:
         print("Loading Whisper model...")
         _state["whisper"] = load_verifier()
-        print("Loading MMS aligner...")
-        _state["aligner"] = load_aligner()
         _models_ready = True
         print("All models ready.")
     except Exception as exc:
@@ -75,34 +70,8 @@ def health():
 
 
 @app.post("/analyze")
-async def analyze(
-    audio: UploadFile = File(...),
-):
-    if not _models_ready:
-        raise HTTPException(status_code=503, detail="Models are still loading, please retry in a moment.")
-    """
-    Free-speech endpoint.
-    Accepts any audio file, returns a full SpeechReport as JSON.
-    No target word required — analyses rhotacism, sigmatism, and lambdacism
-    across the entire utterance.
-    """
-    raw   = await audio.read()
-    fmt   = _ext(audio.filename)
-
-    try:
-        audio_input = load_audio(raw, fmt=fmt)
-        validate_audio(audio_input)
-        clean       = preprocess(audio_input)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    loop   = asyncio.get_running_loop()
-    report = await loop.run_in_executor(
-        _executor,
-        lambda: analyze_speech(clean, _state["aligner"], _state["whisper"]),
-    )
-
-    return JSONResponse(_report_to_dict(report))
+async def analyze(audio: UploadFile = File(...)):
+    raise HTTPException(status_code=503, detail="Free-speech analysis requires the MMS aligner which is not loaded on this deployment.")
 
 
 @app.post("/analyze-word")
@@ -138,36 +107,11 @@ async def analyze_word(
                     "message": f"Could not confirm you said '{target_word}'. Please try again.",
                     "cue": "", "score": 0.0, "level_up": False}
 
-        segment = find_r_segment(clean, _state["aligner"])
-        if segment is None:
-            # MMS couldn't localize /r/. Scan overlapping 50ms windows across
-            # the whole recording and pick the one with the lowest F3 — that
-            # is the most rhotic moment, regardless of where /r/ sits in the word.
-            measurement = _scan_for_best_r(clean)
-            if measurement is None:
-                return {"verified": True, "transcription": verification.transcription,
-                        "message": "Recording unclear — please try again in a quieter space.",
-                        "cue": "", "score": 0.0, "level_up": False}
-            cls      = classify(measurement)
-            feedback = generate_feedback(cls, target_word, scores)
-            return {
-                "verified":      True,
-                "transcription": verification.transcription,
-                "message":       feedback.message,
-                "cue":           feedback.cue,
-                "score":         feedback.score,
-                "level_up":      feedback.level_up,
-                "f3_hz":         cls.f3_hz,
-                "error_type":    cls.error_type.value,
-            }
-
-        try:
-            measurement = extract_formants(clean, segment)
-        except ValueError:
+        measurement = _scan_for_best_r(clean)
+        if measurement is None:
             return {"verified": True, "transcription": verification.transcription,
                     "message": "Recording unclear — please try again in a quieter space.",
                     "cue": "", "score": 0.0, "level_up": False}
-
         cls      = classify(measurement)
         feedback = generate_feedback(cls, target_word, scores)
         return {
