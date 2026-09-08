@@ -24,9 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		93CE75D92FE481A100E214DA /* rhotacism-frontend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rhotacism-frontend.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		93CE75E92FE481A300E214DA /* rhotacism-frontendTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "rhotacism-frontendTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		93CE75F32FE481A300E214DA /* rhotacism-frontendUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "rhotacism-frontendUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		93CE75D92FE481A100E214DA /* Rhotacism App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rhotacism App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		93CE75E92FE481A300E214DA /* Rhotacism AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rhotacism AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		93CE75F32FE481A300E214DA /* Rhotacism AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Rhotacism AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -85,9 +85,9 @@
 		93CE75DA2FE481A100E214DA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				93CE75D92FE481A100E214DA /* rhotacism-frontend.app */,
-				93CE75E92FE481A300E214DA /* rhotacism-frontendTests.xctest */,
-				93CE75F32FE481A300E214DA /* rhotacism-frontendUITests.xctest */,
+				93CE75D92FE481A100E214DA /* Rhotacism App.app */,
+				93CE75E92FE481A300E214DA /* Rhotacism AppTests.xctest */,
+				93CE75F32FE481A300E214DA /* Rhotacism AppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		93CE75D82FE481A100E214DA /* rhotacism-frontend */ = {
+		93CE75D82FE481A100E214DA /* Rhotacism App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 93CE75FD2FE481A300E214DA /* Build configuration list for PBXNativeTarget "rhotacism-frontend" */;
+			buildConfigurationList = 93CE75FD2FE481A300E214DA /* Build configuration list for PBXNativeTarget "Rhotacism App" */;
 			buildPhases = (
 				93CE75D52FE481A100E214DA /* Sources */,
 				93CE75D62FE481A100E214DA /* Frameworks */,
@@ -110,16 +110,16 @@
 			fileSystemSynchronizedGroups = (
 				93CE75DB2FE481A100E214DA /* rhotacism-frontend */,
 			);
-			name = "rhotacism-frontend";
+			name = "Rhotacism App";
 			packageProductDependencies = (
 			);
 			productName = "rhotacism-frontend";
-			productReference = 93CE75D92FE481A100E214DA /* rhotacism-frontend.app */;
+			productReference = 93CE75D92FE481A100E214DA /* Rhotacism App.app */;
 			productType = "com.apple.product-type.application";
 		};
-		93CE75E82FE481A300E214DA /* rhotacism-frontendTests */ = {
+		93CE75E82FE481A300E214DA /* Rhotacism AppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 93CE76002FE481A300E214DA /* Build configuration list for PBXNativeTarget "rhotacism-frontendTests" */;
+			buildConfigurationList = 93CE76002FE481A300E214DA /* Build configuration list for PBXNativeTarget "Rhotacism AppTests" */;
 			buildPhases = (
 				93CE75E52FE481A300E214DA /* Sources */,
 				93CE75E62FE481A300E214DA /* Frameworks */,
@@ -133,16 +133,16 @@
 			fileSystemSynchronizedGroups = (
 				93CE75EC2FE481A300E214DA /* rhotacism-frontendTests */,
 			);
-			name = "rhotacism-frontendTests";
+			name = "Rhotacism AppTests";
 			packageProductDependencies = (
 			);
 			productName = "rhotacism-frontendTests";
-			productReference = 93CE75E92FE481A300E214DA /* rhotacism-frontendTests.xctest */;
+			productReference = 93CE75E92FE481A300E214DA /* Rhotacism AppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		93CE75F22FE481A300E214DA /* rhotacism-frontendUITests */ = {
+		93CE75F22FE481A300E214DA /* Rhotacism AppUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 93CE76032FE481A300E214DA /* Build configuration list for PBXNativeTarget "rhotacism-frontendUITests" */;
+			buildConfigurationList = 93CE76032FE481A300E214DA /* Build configuration list for PBXNativeTarget "Rhotacism AppUITests" */;
 			buildPhases = (
 				93CE75EF2FE481A300E214DA /* Sources */,
 				93CE75F02FE481A300E214DA /* Frameworks */,
@@ -156,11 +156,11 @@
 			fileSystemSynchronizedGroups = (
 				93CE75F62FE481A300E214DA /* rhotacism-frontendUITests */,
 			);
-			name = "rhotacism-frontendUITests";
+			name = "Rhotacism AppUITests";
 			packageProductDependencies = (
 			);
 			productName = "rhotacism-frontendUITests";
-			productReference = 93CE75F32FE481A300E214DA /* rhotacism-frontendUITests.xctest */;
+			productReference = 93CE75F32FE481A300E214DA /* Rhotacism AppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 93CE75D42FE481A100E214DA /* Build configuration list for PBXProject "rhotacism-frontend" */;
+			buildConfigurationList = 93CE75D42FE481A100E214DA /* Build configuration list for PBXProject "Rhotacism App" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -200,9 +200,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				93CE75D82FE481A100E214DA /* rhotacism-frontend */,
-				93CE75E82FE481A300E214DA /* rhotacism-frontendTests */,
-				93CE75F22FE481A300E214DA /* rhotacism-frontendUITests */,
+				93CE75D82FE481A100E214DA /* Rhotacism App */,
+				93CE75E82FE481A300E214DA /* Rhotacism AppTests */,
+				93CE75F22FE481A300E214DA /* Rhotacism AppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		93CE75EB2FE481A300E214DA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 93CE75D82FE481A100E214DA /* rhotacism-frontend */;
+			target = 93CE75D82FE481A100E214DA /* Rhotacism App */;
 			targetProxy = 93CE75EA2FE481A300E214DA /* PBXContainerItemProxy */;
 		};
 		93CE75F52FE481A300E214DA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 93CE75D82FE481A100E214DA /* rhotacism-frontend */;
+			target = 93CE75D82FE481A100E214DA /* Rhotacism App */;
 			targetProxy = 93CE75F42FE481A300E214DA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -396,9 +396,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"rhotacism-frontend/Preview Content\"";
+				DEVELOPMENT_TEAM = P4B92R3W9K;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Your voice is recorded to analyse your /r/ pronunciation and provide real-time therapy feedback.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -425,9 +426,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"rhotacism-frontend/Preview Content\"";
+				DEVELOPMENT_TEAM = P4B92R3W9K;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Your voice is recorded to analyse your /r/ pronunciation and provide real-time therapy feedback.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -460,7 +462,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/rhotacism-frontend.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/rhotacism-frontend";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rhotacism App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Rhotacism App";
 			};
 			name = Debug;
 		};
@@ -478,7 +480,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/rhotacism-frontend.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/rhotacism-frontend";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rhotacism App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Rhotacism App";
 			};
 			name = Release;
 		};
@@ -517,7 +519,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		93CE75D42FE481A100E214DA /* Build configuration list for PBXProject "rhotacism-frontend" */ = {
+		93CE75D42FE481A100E214DA /* Build configuration list for PBXProject "Rhotacism App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				93CE75FB2FE481A300E214DA /* Debug */,
@@ -526,7 +528,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		93CE75FD2FE481A300E214DA /* Build configuration list for PBXNativeTarget "rhotacism-frontend" */ = {
+		93CE75FD2FE481A300E214DA /* Build configuration list for PBXNativeTarget "Rhotacism App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				93CE75FE2FE481A300E214DA /* Debug */,
@@ -535,7 +537,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		93CE76002FE481A300E214DA /* Build configuration list for PBXNativeTarget "rhotacism-frontendTests" */ = {
+		93CE76002FE481A300E214DA /* Build configuration list for PBXNativeTarget "Rhotacism AppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				93CE76012FE481A300E214DA /* Debug */,
@@ -544,7 +546,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		93CE76032FE481A300E214DA /* Build configuration list for PBXNativeTarget "rhotacism-frontendUITests" */ = {
+		93CE76032FE481A300E214DA /* Build configuration list for PBXNativeTarget "Rhotacism AppUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				93CE76042FE481A300E214DA /* Debug */,
