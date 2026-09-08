@@ -15,7 +15,6 @@ def record_audio(seconds=3):
     print("Recording complete.")
     return audio_array, sr
 
-
 def preprocess_audio(audio_array, sr=16000):
     print("Applying spectral noise reduction...")
     reduced_noise_audio = nr.reduce_noise(
@@ -27,7 +26,6 @@ def preprocess_audio(audio_array, sr=16000):
     trimmed_audio, _ = librosa.effects.trim(reduced_noise_audio, top_db=25)
     print("Audio cleaned and trimmed.")
     return trimmed_audio
-
 
 model_id = "speech31/wav2vec2-large-english-phoneme-v2"
 
@@ -52,7 +50,6 @@ def analyze_utterance(audio_array):
     probabilities = torch.nn.functional.softmax(logits, dim=-1).squeeze(0)
 
     return transcription, probabilities, predicted_ids.squeeze(0)
-
 
 def verify_rhoticity(transcription, probabilities, predicted_ids, target_word="red"):
     print(f"Target Word Context: {target_word.upper()}")

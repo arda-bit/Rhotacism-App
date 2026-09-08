@@ -16,6 +16,7 @@ from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from rhotacism.audio        import load_audio, validate_audio, preprocess
@@ -43,6 +44,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Speech Impairment API", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # ── Endpoints ──────────────────────────────────────────────────────────────────

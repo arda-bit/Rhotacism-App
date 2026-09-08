@@ -1,0 +1,11 @@
+[build]
+builder = "DOCKERFILE"
+
+[deploy]
+startCommand = "uv run uvicorn server:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/health"
+healthcheckTimeout = 300   # models take ~3 min to download on first deploy
+restartPolicyType = "ON_FAILURE"
+
+[[mounts]]
+mountPath = "/cache"        # persists Whisper + HuggingFace models between deploys

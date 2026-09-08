@@ -17,9 +17,10 @@ enum NetworkError: LocalizedError {
 final class NetworkService {
     static let shared = NetworkService()
 
-    // Change this to your server IP when running on a real device.
-    // localhost works on the Simulator; use your Mac's LAN IP for device testing.
-    var baseURL = "http://localhost:8000"
+    // Production: replace with your Railway URL after deploying.
+    // Format: "https://your-app-name.up.railway.app"
+    // For local Simulator testing switch back to "http://localhost:8000".
+    var baseURL = "https://your-app-name.up.railway.app"
 
     private init() {}
 
