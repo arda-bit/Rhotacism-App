@@ -20,7 +20,7 @@ final class NetworkService {
     // Production: replace with your Railway URL after deploying.
     // Format: "https://your-app-name.up.railway.app"
     // For local Simulator testing switch back to "http://localhost:8000".
-    var baseURL = "https://your-app-name.up.railway.app"
+    var baseURL = "https://rhotacism-backend-production.up.railway.app"
 
     private init() {}
 
