@@ -12,6 +12,7 @@ Two endpoints:
 
 import asyncio
 import json
+import threading
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
 
@@ -31,14 +32,28 @@ from rhotacism.models       import PhonemeSegment
 
 _executor = ThreadPoolExecutor(max_workers=4)
 _state: dict = {}
+_models_ready = False
+
+
+def _load_models():
+    global _models_ready
+    try:
+        print("Loading Whisper model...")
+        _state["whisper"] = load_verifier()
+        print("Loading MMS aligner...")
+        _state["aligner"] = load_aligner()
+        _models_ready = True
+        print("All models ready.")
+    except Exception as exc:
+        print(f"Model loading failed: {exc}")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Loading models — this may take a minute on first run...")
-    _state["whisper"]  = load_verifier()
-    _state["aligner"]  = load_aligner()
-    print("All models ready.")
+    # Load models in a background thread so the server becomes healthy immediately.
+    # Railway's health check will pass while models download; analyze endpoints
+    # return 503 until ready.
+    threading.Thread(target=_load_models, daemon=True).start()
     yield
     _executor.shutdown(wait=False)
 
@@ -56,13 +71,15 @@ app.add_middleware(
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "models_loaded": bool(_state)}
+    return {"status": "ok", "models_loaded": _models_ready}
 
 
 @app.post("/analyze")
 async def analyze(
     audio: UploadFile = File(...),
 ):
+    if not _models_ready:
+        raise HTTPException(status_code=503, detail="Models are still loading, please retry in a moment.")
     """
     Free-speech endpoint.
     Accepts any audio file, returns a full SpeechReport as JSON.
@@ -94,6 +111,8 @@ async def analyze_word(
     target_word:    str         = Form(...),
     session_scores: str         = Form("[]"),
 ):
+    if not _models_ready:
+        raise HTTPException(status_code=503, detail="Models are still loading, please retry in a moment.")
     """
     Guided therapy endpoint.
     Verifies the user said `target_word`, then analyses the /r/ phoneme quality.
