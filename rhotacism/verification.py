@@ -12,9 +12,9 @@ _R_SUBSTITUTIONS = ("w", "l", "")
 
 
 def load_verifier():
-    """Load Whisper-base.en once at server startup."""
-    import whisper
-    return whisper.load_model("base.en")
+    """Load Whisper-base.en via faster-whisper (ctranslate2, no PyTorch)."""
+    from faster_whisper import WhisperModel
+    return WhisperModel("base.en", device="cpu", compute_type="int8")
 
 
 def verify_word(
@@ -27,14 +27,17 @@ def verify_word(
     Returns VerificationResult with verified=False (not an error) when the
     wrong word is detected — the caller decides whether to reject the request.
     """
-    result = model.transcribe(audio.array, language="en", fp16=False)
-    transcription: str = result.get("text", "").strip()
+    segments_gen, _ = model.transcribe(audio.array, language="en", beam_size=5)
+    segments = list(segments_gen)
 
-    segments = result.get("segments", [])
-    if segments:
-        no_speech_prob = segments[0].get("no_speech_prob", 0.0)
-        base_confidence = round(1.0 - no_speech_prob, 3)
-    else:
+    if not segments:
+        return VerificationResult(verified=False, transcription="", confidence=0.0)
+
+    transcription: str = " ".join(s.text for s in segments).strip()
+    no_speech_prob = segments[0].no_speech_prob if segments else 0.0
+    base_confidence = round(1.0 - no_speech_prob, 3)
+
+    if not transcription:
         # No speech segments → silence or very short utterance
         return VerificationResult(
             verified=False,
