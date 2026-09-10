@@ -2,20 +2,12 @@ import SwiftUI
 
 struct AssessmentView: View {
     @EnvironmentObject var store: AppStore
-    @StateObject private var recorder = AudioRecorder()
-
-    @State private var report: SpeechReport? = nil
-    @State private var error: String? = nil
-    @State private var isRecording = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
-                    freeSpeechRecorder
-                    if let r = report {
-                        reportSection(r)
-                    } else if report == nil && !store.sessions.isEmpty {
+                    if !store.sessions.isEmpty {
                         sessionProgressSection
                     }
                     if store.sessions.count >= 2 {
@@ -23,6 +15,9 @@ struct AssessmentView: View {
                     }
                     if !store.sessions.isEmpty {
                         sessionHistorySection
+                    }
+                    if store.sessions.isEmpty {
+                        emptyState
                     }
                 }
                 .padding(.horizontal, 20)
@@ -34,173 +29,26 @@ struct AssessmentView: View {
                     Text("Assessment")
                         .font(.headline)
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    if report != nil {
-                        Button("Clear") { withAnimation { report = nil } }
-                            .foregroundStyle(.secondary)
-                    }
-                }
             }
-        }
-        .task { await recorder.requestPermission() }
-    }
-
-    // MARK: - Free speech recorder
-
-    private var freeSpeechRecorder: some View {
-        VStack(spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Free speech analysis")
-                        .font(.headline)
-                    Text("Record any sentence to detect rhotacism, sigmatism, and lambdacism.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-            }
-
-            WaveformBars(level: recorder.level, isRecording: recorder.state == .recording)
-                .frame(height: 44)
-
-            if let err = error {
-                Text(err)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-                    .multilineTextAlignment(.center)
-            }
-
-            Button {
-                handleFreeSpeechTap()
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: recorder.state == .recording ? "stop.fill" : "mic.fill")
-                    Text(buttonLabel)
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(recorder.state == .recording ? Color.red : Color.indigo, in: RoundedRectangle(cornerRadius: 14))
-                .foregroundStyle(.white)
-            }
-            .disabled(recorder.state == .processing)
-        }
-        .padding(20)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(Color.primary.opacity(0.06), lineWidth: 0.5))
-        .padding(.top, 8)
-    }
-
-    private var buttonLabel: String {
-        switch recorder.state {
-        case .idle:       return "Record free speech"
-        case .recording:  return "Stop and analyze"
-        case .processing: return "Analyzing…"
         }
     }
 
-    // MARK: - Report
+    // MARK: - Empty state
 
-    private func reportSection(_ r: SpeechReport) -> some View {
-        VStack(spacing: 20) {
-            primaryConcernBanner(r)
-            impairmentScores(r)
-            if !r.phonemeResults.isEmpty { phonemeList(r) }
-            if !r.feedback.isEmpty { feedbackSection(r) }
-        }
-    }
-
-    private func primaryConcernBanner(_ r: SpeechReport) -> some View {
-        let imp = r.primaryConcern.flatMap { ImpairmentType(rawValue: $0) }
-        let (color, icon): (Color, String) = imp == nil
-            ? (.green, "checkmark.circle.fill")
-            : (.orange, "exclamationmark.triangle.fill")
-
-        return HStack(spacing: 14) {
-            Image(systemName: icon)
-                .font(.system(size: 32, weight: .semibold))
-                .foregroundStyle(color)
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Diagnosis")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
-                Text(imp?.displayName ?? "No impairment detected")
-                    .font(.title3.bold())
-                if let transcript = r.transcript.nilIfEmpty {
-                    Text("\"\(transcript)\"")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                }
-            }
-            Spacer()
-        }
-        .padding(20)
-        .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(color.opacity(0.2), lineWidth: 0.5))
-    }
-
-    private func impairmentScores(_ r: SpeechReport) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Impairment scores")
-                .font(.subheadline.weight(.medium))
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "chart.bar.xaxis")
+                .font(.system(size: 44))
                 .foregroundStyle(.secondary)
-
-            if r.impairmentScores.isEmpty {
-                Text("No target phonemes detected.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.vertical, 8)
-            } else {
-                ForEach(ImpairmentType.allCases, id: \.self) { imp in
-                    if let score = r.impairmentScores[imp.rawValue] {
-                        ImpairmentScoreRow(impairment: imp, score: score)
-                    }
-                }
-            }
-        }
-        .padding(18)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.primary.opacity(0.06), lineWidth: 0.5))
-    }
-
-    private func phonemeList(_ r: SpeechReport) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Phoneme-by-phoneme")
-                .font(.subheadline.weight(.medium))
+            Text("No sessions yet")
+                .font(.headline)
+            Text("Complete a therapy session to see your progress here.")
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
-
-            VStack(spacing: 1) {
-                ForEach(r.phonemeResults) { p in
-                    PhonemeRow(result: p)
-                }
-            }
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                .multilineTextAlignment(.center)
         }
-    }
-
-    private func feedbackSection(_ r: SpeechReport) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Feedback")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
-
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(r.feedback, id: \.self) { line in
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "lightbulb.fill")
-                            .foregroundStyle(.yellow)
-                            .font(.caption)
-                            .padding(.top, 2)
-                        Text(line)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .padding(14)
-            .background(Color.yellow.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
-        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 60)
     }
 
     // MARK: - Sessions progress
@@ -265,31 +113,6 @@ struct AssessmentView: View {
         }
     }
 
-    // MARK: - Actions
-
-    private func handleFreeSpeechTap() {
-        error = nil
-        switch recorder.state {
-        case .idle:
-            recorder.start()
-        case .recording:
-            guard let url = recorder.stop() else { recorder.state = .idle; return }
-            Task { await analyzeFreeSpeech(url: url) }
-        case .processing:
-            break
-        }
-    }
-
-    private func analyzeFreeSpeech(url: URL) async {
-        do {
-            let r = try await store.submitFreeSpeech(audioURL: url)
-            withAnimation(.spring(duration: 0.4)) { report = r }
-        } catch {
-            withAnimation { self.error = error.localizedDescription }
-        }
-        recorder.state = .idle
-        try? FileManager.default.removeItem(at: url)
-    }
 }
 
 // MARK: - Sub-components
@@ -482,12 +305,6 @@ struct ScoreTrendChart: View {
         default:     return .red
         }
     }
-}
-
-// MARK: - Helpers
-
-private extension String {
-    var nilIfEmpty: String? { isEmpty ? nil : self }
 }
 
 #Preview {
